@@ -139,15 +139,15 @@
     <Folder Include="TestContainers\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\F23.Mobile.iOS.DependencySwizzler\F23.Mobile.iOS.DependencySwizzler.csproj">
+    <ProjectReference Include="..\..\src\F23.Mobile.iOS.DependencySwizzler\F23.Mobile.iOS.DependencySwizzler.csproj">
       <Project>{3B8706F4-CC33-4359-9037-2A78F28B4883}</Project>
       <Name>F23.Mobile.iOS.DependencySwizzler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\F23.Mobile.iOS.DependencySwizzler.TinyIoC\F23.Mobile.iOS.DependencySwizzler.TinyIoC.csproj">
+    <ProjectReference Include="..\..\src\F23.Mobile.iOS.DependencySwizzler.TinyIoC\F23.Mobile.iOS.DependencySwizzler.TinyIoC.csproj">
       <Project>{12CB9D34-11A3-4A63-9E67-D0FF67396BC9}</Project>
       <Name>F23.Mobile.iOS.DependencySwizzler.TinyIoC</Name>
     </ProjectReference>
-    <ProjectReference Include="..\F23.Mobile.iOS.DependencySwizzler.Unity\F23.Mobile.iOS.DependencySwizzler.Unity.csproj">
+    <ProjectReference Include="..\..\src\F23.Mobile.iOS.DependencySwizzler.Unity\F23.Mobile.iOS.DependencySwizzler.Unity.csproj">
       <Project>{1CDC162F-D5B5-43D3-8C34-CE6F5DC21AE9}</Project>
       <Name>F23.Mobile.iOS.DependencySwizzler.Unity</Name>
     </ProjectReference>

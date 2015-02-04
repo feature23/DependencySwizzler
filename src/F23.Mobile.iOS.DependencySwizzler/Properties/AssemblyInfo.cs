@@ -7,9 +7,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("F23.Mobile.iOS.DependencySwizzler")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("feature[23]")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("James")]
+[assembly: AssemblyCopyright("Copyright 2015 feature[23]")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

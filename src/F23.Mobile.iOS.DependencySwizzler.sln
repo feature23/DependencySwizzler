@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F23.Mobile.iOS.DependencySw
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F23.Mobile.iOS.DependencySwizzler.TinyIoC", "F23.Mobile.iOS.DependencySwizzler.TinyIoC\F23.Mobile.iOS.DependencySwizzler.TinyIoC.csproj", "{12CB9D34-11A3-4A63-9E67-D0FF67396BC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F23.Mobile.iOS.DependencySwizzler.Tests", "F23.Mobile.iOS.DependencySwizzler.Tests\F23.Mobile.iOS.DependencySwizzler.Tests.csproj", "{E51B792E-B2AD-40F3-8901-ECC1C4FC18F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F23.Mobile.iOS.DependencySwizzler.Tests", "..\tests\F23.Mobile.iOS.DependencySwizzler.Tests\F23.Mobile.iOS.DependencySwizzler.Tests.csproj", "{E51B792E-B2AD-40F3-8901-ECC1C4FC18F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
