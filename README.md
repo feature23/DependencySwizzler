@@ -42,6 +42,14 @@ var buildUpStrategy = new CustomBuildUpStrategy(viewController => {
 StoryboardInjector.SetUp(buildUpStrategy);
 ```
 
+*You may also pass a delegate directly to the `SetUp()` method.*
+
+```C#
+StoryboardInjector.SetUp(viewController => {
+	/* custom logic to build up dependencies */
+});
+```
+
 ## Installation
 Installation is simplest via NuGet. There are separate packages for the core library and each container implementation. You may also compile the source directly in your project.
 
