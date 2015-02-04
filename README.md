@@ -15,9 +15,11 @@ var buildUpStrategy = new UnityBuildUpStrategy(container);
 StoryboardInjector.SetUp(buildUpStrategy);
 
 ```
-*Note: With Unity you must use the `[Dependency]` attribute for property-setter injection, or you may optionally use the provided extension method to inject any properties with types registered in the container.*
+*Note: With Unity you must use the `[Dependency]` attribute for property-setter injection, or you may 
+optionally configure the strategy to add a Unity extension and remove the attribute requirement. In this case,
+all publicly settable properties of a type registered with the container will be build up.*
 ```C#
-container.AddSetterBuildUpExtension();
+var buildUpStrategy = new UnityBuildUpStrategy(container, configurePropertyInjectionExtension: true);
 ```
 
 ### TinyIoC

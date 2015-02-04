@@ -27,7 +27,7 @@ namespace F23.Mobile.iOS.DependencySwizzler.Unity
         /// settable properties of a type that is registered in the container. In this case, the </c>[Dependency]</c>
         /// attribute is not needed.
         /// </remarks>
-        public UnityBuildUpStrategy(IUnityContainer container, bool configurePropertyInjectionExtension = true)
+        public UnityBuildUpStrategy(IUnityContainer container, bool configurePropertyInjectionExtension = false)
         {
             if (container == null)
             {
