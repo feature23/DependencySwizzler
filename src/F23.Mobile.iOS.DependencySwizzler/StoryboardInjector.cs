@@ -30,7 +30,7 @@ namespace F23.Mobile.iOS.DependencySwizzler
         /// Sets up dependency injection using the provided 
         /// <see cref="F23.Mobile.iOS.DependencySwizzler.IBuildUpStrategy"/>.
         /// </summary>
-        /// <param name="buildUpStrategy">The <see cref="F23.Mobile.iOS.DependencySwizzler.IBuildUpStrategy/> 
+        /// <param name="buildUpStrategy">The <see cref="F23.Mobile.iOS.DependencySwizzler.IBuildUpStrategy" /> 
         /// used to build up instances of <see cref="UIKit.UIViewController"/>.</param>
         public static void SetUp(IBuildUpStrategy buildUpStrategy)
         {
