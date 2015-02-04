@@ -24,6 +24,7 @@ bld/
 
 # Allow root-level build folder
 !/build/*
+/build/*.nupkg
 
 # Roslyn cache directories
 *.ide/

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+	<metadata>
+		<id>DependencySwizzler</id>
+		<version>1.0.0</version>
+		<title>Dependency Swizzler</title>
+		<authors>James Blair</authors>
+		<owners>feature[23]</owners>
+		<copyright>Copyright 2015 feature[23]</copyright>
+		<description>A Xamarin iOS library to enable dependency injection of UIViewControllers that use storyboards.</description>
+		<summary>A Xamarin iOS library to enable dependency injection of UIViewControllers that use storyboards.</summary>
+		<language>en-US</language>
+		<projectUrl>https://github.com/feature23/DependencySwizzler</projectUrl>
+		<licenseUrl>https://raw.githubusercontent.com/feature23/DependencySwizzler/master/LICENSE.md</licenseUrl>
+		<iconUrl>https://raw.githubusercontent.com/feature23/DependencySwizzler/master/logo.png</iconUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<tags>dependency swizzler swizzle ios unity tinyioc .net</tags>
+	</metadata>
+	<files>
+		<file src="../src/F23.Mobile.iOS.DependencySwizzler/bin/release/F23.Mobile.iOS.DependencySwizzler.dll" target="lib" />
+	</files>
+</package>
