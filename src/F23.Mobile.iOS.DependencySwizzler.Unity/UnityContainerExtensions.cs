@@ -3,7 +3,7 @@ using Microsoft.Practices.Unity;
 
 namespace F23.Mobile.iOS.DependencySwizzler.Unity
 {
-    public static class UnityContainerExtensions
+    internal static class UnityContainerExtensions
     {
         public static void AddSetterBuildUpExtension(this IUnityContainer container)
         {
