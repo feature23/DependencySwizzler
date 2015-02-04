@@ -5,16 +5,33 @@ using UIKit;
 
 namespace F23.Mobile.iOS.DependencySwizzler
 {
+    /// <summary>
+    /// Static class responsible for setting up (or tearing down) dependency injection
+    /// via Objective-C runtime method swizzling. For a detailed discussion of method
+    /// swizzling, see this excellent article: http://nshipster.com/method-swizzling/.
+    /// Also, see the Apple documentation for the Objective-C runtime reference: 
+    /// https://developer.apple.com/library/ios/documentation/Cocoa/Reference/ObjCRuntimeRef/index.html
+    /// </summary>
     public static class StoryboardInjector
     {
         private static readonly object _lock = new object();
         private static IBuildUpStrategy _buildUpStrategy;
 
+        /// <summary>
+        /// Set up dependency injection using the provided delegate.
+        /// </summary>
+        /// <param name="buildUp">The delegate used to build up instances of <see cref="UIKit.UIViewController"/>.</param>
         public static void SetUp(Action<UIViewController> buildUp)
         {
             SetUp(new CustomBuildUpStrategy(buildUp));
         }
 
+        /// <summary>
+        /// Sets up dependency injection using the provided 
+        /// <see cref="F23.Mobile.iOS.DependencySwizzler.IBuildUpStrategy"/>.
+        /// </summary>
+        /// <param name="buildUpStrategy">The <see cref="F23.Mobile.iOS.DependencySwizzler.IBuildUpStrategy/> 
+        /// used to build up instances of <see cref="UIKit.UIViewController"/>.</param>
         public static void SetUp(IBuildUpStrategy buildUpStrategy)
         {
             if (buildUpStrategy == null)
@@ -31,6 +48,10 @@ namespace F23.Mobile.iOS.DependencySwizzler
             }
         }
 
+        /// <summary>
+        /// Swizzles <see cref="UIKit.UIStoryboard"/> back to its
+        /// default implementation, disabling dependency injection.
+        /// </summary>
         public static void Reset()
         {
             lock (_lock)
@@ -66,7 +87,7 @@ namespace F23.Mobile.iOS.DependencySwizzler
 
         private static void ResetInitial()
         {
-            if (OriginalImpInitial == null)
+            if (OriginalImpInitial == IntPtr.Zero)
             {
                 return;
             }
@@ -74,11 +95,13 @@ namespace F23.Mobile.iOS.DependencySwizzler
             var method = GetMethodInitial();
 
             method_setImplementation(method, OriginalImpInitial);
+
+            OriginalImpInitial = IntPtr.Zero;
         }
 
         private static void ResetNamed()
         {
-            if (OriginalImpNamed == null)
+            if (OriginalImpNamed == IntPtr.Zero)
             {
                 return;
             }
@@ -86,6 +109,8 @@ namespace F23.Mobile.iOS.DependencySwizzler
             var method = GetMethodNamed();
 
             method_setImplementation(method, OriginalImpNamed);
+
+            OriginalImpNamed = IntPtr.Zero;
         }
 
         private static IntPtr GetMethodInitial()
