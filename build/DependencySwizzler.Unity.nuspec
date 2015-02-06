@@ -2,7 +2,7 @@
 <package>
 	<metadata>
 		<id>DependencySwizzler.Unity</id>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 		<title>Dependency Swizzler (Unity)</title>
 		<authors>James Blair</authors>
 		<owners>feature[23]</owners>
