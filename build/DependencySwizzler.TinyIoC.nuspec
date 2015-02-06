@@ -2,7 +2,7 @@
 <package>
 	<metadata>
 		<id>DependencySwizzler.TinyIoC</id>
-		<version>1.0.1</version>
+		<version>1.0.1.1</version>
 		<title>Dependency Swizzler (TinyIoC)</title>
 		<authors>James Blair</authors>
 		<owners>feature[23]</owners>
