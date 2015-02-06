@@ -20,25 +20,19 @@ namespace F23.Mobile.iOS.DependencySwizzler.Unity
         /// <param name="container">Instance of <see cref="Microsoft.Practices.Unity.IUnityContainer"/>.</param>
         /// <param name="configurePropertyInjectionExtension">If set to <c>true</c> configure the property injection Unity extension.</param>
         /// <remarks>
-        /// By default, dependencies must be marked with the <c>[Dependency]</c> attribute
-        /// to be build up by the <see cref="Microsoft.Practices.Unity.IUnityContainer"/>.
-        /// By setting the <paramref name="configurePropertyInjectionExtension" />
-        /// parameter to <c>true</c>, an extension is added to the container that will build up all publicly 
-        /// settable properties of a type that is registered in the container. In this case, the </c>[Dependency]</c>
-        /// attribute is not needed.
+        /// Using this class adds an extension to the provided
+        /// <see cref="Microsoft.Practices.Unity.IUnityContainer"/>,
+        /// allowing dependencies to be injected without using the 
+        /// <c>[Dependency]</c> attribute.
         /// </remarks>
-        public UnityBuildUpStrategy(IUnityContainer container, bool configurePropertyInjectionExtension = false)
+        public UnityBuildUpStrategy(IUnityContainer container)
         {
             if (container == null)
             {
                 throw new ArgumentNullException("container");
             }
             _container = container;
-
-            if (configurePropertyInjectionExtension)
-            {
-                container.AddSetterBuildUpExtension();
-            }
+            _container.AddSetterBuildUpExtension();
         }
 
         /// <summary>

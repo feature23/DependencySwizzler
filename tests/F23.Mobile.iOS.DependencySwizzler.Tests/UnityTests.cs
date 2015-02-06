@@ -1,8 +1,8 @@
 ﻿using System;
 using F23.Mobile.iOS.DependencySwizzler.Tests.TestContainers;
+using F23.Mobile.iOS.DependencySwizzler.Unity;
 using NUnit.Framework;
 using UIKit;
-using F23.Mobile.iOS.DependencySwizzler.Unity;
 
 namespace F23.Mobile.iOS.DependencySwizzler.Tests
 {
@@ -18,7 +18,7 @@ namespace F23.Mobile.iOS.DependencySwizzler.Tests
 
             var strategy = new UnityBuildUpStrategy(container);
 
-            StoryboardInjector.SetUp(strategy);
+            StoryboardInjector.SetUp(strategy, msg => Console.WriteLine(msg));
         }
 
         [TestFixtureTearDown]
@@ -33,7 +33,9 @@ namespace F23.Mobile.iOS.DependencySwizzler.Tests
         {
             var storyboard = UIStoryboard.FromName("TestStoryboard", null);
 
-            var vc = storyboard.InstantiateInitialViewController() as ServiceTestViewController;
+            var nav = storyboard.InstantiateInitialViewController() as UINavigationController;
+
+            var vc = nav.ViewControllers[0] as ServiceTestViewController;
 
             Assert.IsNotNull(vc);
 
@@ -47,7 +49,9 @@ namespace F23.Mobile.iOS.DependencySwizzler.Tests
 
             const string identifier = "ServiceTestNamedViewController";
 
-            var vc = storyboard.InstantiateViewController(identifier) as ServiceTestNamedViewController;
+            var nav = storyboard.InstantiateViewController(identifier) as UINavigationController;
+
+            var vc = nav.ViewControllers[0] as ServiceTestNamedViewController;
 
             Assert.IsNotNull(vc);
 

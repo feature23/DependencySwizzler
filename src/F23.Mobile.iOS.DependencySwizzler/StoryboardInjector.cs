@@ -14,8 +14,20 @@ namespace F23.Mobile.iOS.DependencySwizzler
     /// </summary>
     public static class StoryboardInjector
     {
+        private static readonly IntPtr Method;
         private static readonly object _lock = new object();
+
         private static IBuildUpStrategy _buildUpStrategy;
+        private static Action<string> _logger;
+        private static IntPtr _originalImpl;
+
+        static StoryboardInjector()
+        {
+            Method = class_getInstanceMethod(
+                Class.GetHandle(typeof(UIStoryboard)),
+                Selector.GetHandle("instantiateViewControllerWithIdentifier:")
+            );
+        }
 
         /// <summary>
         /// Set up dependency injection using the provided delegate.
@@ -23,7 +35,17 @@ namespace F23.Mobile.iOS.DependencySwizzler
         /// <param name="buildUp">The delegate used to build up instances of <see cref="UIKit.UIViewController"/>.</param>
         public static void SetUp(Action<UIViewController> buildUp)
         {
-            SetUp(new CustomBuildUpStrategy(buildUp));
+            SetUp(buildUp, null);
+        }
+
+        /// <summary>
+        /// Set up dependency injection using the provided delegate and logging callback.
+        /// </summary>
+        /// <param name="buildUp">The delegate used to build up instances of <see cref="UIKit.UIViewController"/>.</param>
+        /// /// <param name="logger"">A callback for logging messages.</param>
+        public static void SetUp(Action<UIViewController> buildUp, Action<string> logger)
+        {
+            SetUp(new CustomBuildUpStrategy(buildUp), logger);
         }
 
         /// <summary>
@@ -34,17 +56,29 @@ namespace F23.Mobile.iOS.DependencySwizzler
         /// used to build up instances of <see cref="UIKit.UIViewController"/>.</param>
         public static void SetUp(IBuildUpStrategy buildUpStrategy)
         {
+            SetUp(buildUpStrategy, null);
+        }
+
+        /// <summary>
+        /// Sets up dependency injection using the provided 
+        /// <see cref="F23.Mobile.iOS.DependencySwizzler.IBuildUpStrategy"/>
+        /// and logging callback.
+        /// </summary>
+        /// <param name="buildUpStrategy">The <see cref="F23.Mobile.iOS.DependencySwizzler.IBuildUpStrategy" /> 
+        /// used to build up instances of <see cref="UIKit.UIViewController"/>.</param>
+        /// <param name="logger"">A callback for logging messages.</param>
+        public static void SetUp(IBuildUpStrategy buildUpStrategy, Action<string> logger)
+        {
             if (buildUpStrategy == null)
             {
                 throw new ArgumentNullException("buildUpStrategy");
             }
 
-            _buildUpStrategy = buildUpStrategy;
-
             lock (_lock)
             {
-                InitInitial();
-                InitNamed();
+                ResetInternal();
+
+                SetUpInternal(buildUpStrategy, logger);
             }
         }
 
@@ -56,129 +90,95 @@ namespace F23.Mobile.iOS.DependencySwizzler
         {
             lock (_lock)
             {
-                ResetInitial();
-                ResetNamed();
+                ResetInternal();
             }
         }
 
-        private static void InitInitial()
+        private static void SetUpInternal(IBuildUpStrategy buildUpStrategy, Action<string> logger)
         {
-            var method = GetMethodInitial();
+            _buildUpStrategy = buildUpStrategy;
+            _logger = logger;
 
-            OriginalImpInitial = method_getImplementation(method);
+            Log("Setting up UIStoryboard for UIViewController dependency injection.");
 
-            CallbackDelegateInitial d = InjectInitial;
-            var imp = Marshal.GetFunctionPointerForDelegate(d);
+            CallbackDelegateNamed d = Inject;
+            var newImpl = Marshal.GetFunctionPointerForDelegate(d);
 
-            method_setImplementation(method, imp);
+            _originalImpl = method_setImplementation(Method, newImpl);
         }
 
-        private static void InitNamed()
+        private static void ResetInternal()
         {
-            var method = GetMethodNamed();
-
-            OriginalImpNamed = method_getImplementation(method);
-
-            CallbackDelegateNamed d = InjectNamed;
-            var imp = Marshal.GetFunctionPointerForDelegate(d);
-
-            method_setImplementation(method, imp);
-        }
-
-        private static void ResetInitial()
-        {
-            if (OriginalImpInitial == IntPtr.Zero)
+            if (_originalImpl == IntPtr.Zero)
             {
                 return;
             }
 
-            var method = GetMethodInitial();
+            Log("Resetting UIStoryboard. No more dependency injection... :(");
 
-            method_setImplementation(method, OriginalImpInitial);
+            method_setImplementation(Method, _originalImpl);
 
-            OriginalImpInitial = IntPtr.Zero;
-        }
-
-        private static void ResetNamed()
-        {
-            if (OriginalImpNamed == IntPtr.Zero)
-            {
-                return;
-            }
-
-            var method = GetMethodNamed();
-
-            method_setImplementation(method, OriginalImpNamed);
-
-            OriginalImpNamed = IntPtr.Zero;
-        }
-
-        private static IntPtr GetMethodInitial()
-        {
-            var sel = Selector.GetHandle(Sel_Initial);
-            var @class = Class.GetHandle(typeof(UIStoryboard));
-
-            return class_getInstanceMethod(@class, sel);
-        }
-
-        private static IntPtr GetMethodNamed()
-        {
-            var sel = Selector.GetHandle(Sel_Named);
-            var @class = Class.GetHandle(typeof(UIStoryboard));
-
-            return class_getInstanceMethod(@class, sel);
-        }
-
-        [MonoPInvokeCallback(typeof(CallbackDelegateInitial))]
-        private static IntPtr InjectInitial(IntPtr block, IntPtr self)
-        {
-            var imp = Marshal.GetDelegateForFunctionPointer<CallbackDelegateInitial>(OriginalImpInitial);
-
-            var handle = imp(block, self);
-
-            var viewController = Runtime.GetNSObject<UIViewController>(handle);
-
-            _buildUpStrategy.BuildUp(viewController);
-
-            return handle;
+            _originalImpl = IntPtr.Zero;
+            _buildUpStrategy = null;
+            _logger = null;
         }
 
         [MonoPInvokeCallback(typeof(CallbackDelegateNamed))]
-        private static IntPtr InjectNamed(IntPtr block, IntPtr self, IntPtr name)
+        private static IntPtr Inject(IntPtr block, IntPtr self, IntPtr name)
         {
-            var imp = Marshal.GetDelegateForFunctionPointer<CallbackDelegateNamed>(OriginalImpNamed);
+            var impl = Marshal.GetDelegateForFunctionPointer<CallbackDelegateNamed>(_originalImpl);
 
-            var handle = imp(block, self, name);
+            var handle = impl(block, self, name);
 
             var viewController = Runtime.GetNSObject<UIViewController>(handle);
 
-            _buildUpStrategy.BuildUp(viewController);
+            Log("Preparing to inject dependencies into '{0}'...", viewController.GetType().Name);
+
+            InjectRecursive(viewController);
 
             return handle;
         }
 
-        private static IntPtr OriginalImpInitial;
-        private static IntPtr OriginalImpNamed;
+        private static void InjectRecursive(UIViewController vc)
+        {
+            Log("Building up instance of '{0}'.", vc.GetType().Name);
 
-        [MonoNativeFunctionWrapper]
-        delegate IntPtr CallbackDelegateInitial(IntPtr block, IntPtr self);
+            _buildUpStrategy.BuildUp(vc);
+
+            if (vc.ChildViewControllers != null)
+            {
+                foreach (var child in vc.ChildViewControllers)
+                {
+                    InjectRecursive(child);
+                }
+            }
+        }
+
+        private static void Log(string message)
+        {
+            if (_logger != null)
+                _logger(message);
+        }
+
+        private static void Log(string format, params object[] args)
+        {
+            if (_logger != null)
+                _logger(string.Format(format, args));
+        }
 
         [MonoNativeFunctionWrapper]
         delegate IntPtr CallbackDelegateNamed(IntPtr block, IntPtr self, IntPtr name);
 
-        private const string Sel_Initial = "instantiateInitialViewController";
-        private const string Sel_Named = "instantiateViewControllerWithIdentifier:";
-
         [DllImport(Constants.ObjectiveCLibrary)]
         private extern static IntPtr class_getInstanceMethod(IntPtr @class, IntPtr sel);
-
-        [DllImport(Constants.ObjectiveCLibrary)]
-        private extern static IntPtr method_getImplementation(IntPtr method);
+//
+//        [DllImport(Constants.ObjectiveCLibrary)]
+//        private extern static IntPtr method_getImplementation(IntPtr method);
 
         [DllImport(Constants.ObjectiveCLibrary)]
         private extern static IntPtr imp_implementationWithBlock(ref BlockLiteral block);
 
         [DllImport(Constants.ObjectiveCLibrary)]
-        private extern static void method_setImplementation(IntPtr method, IntPtr imp);
+        private extern static IntPtr method_setImplementation(IntPtr method, IntPtr imp);
     }
 }
